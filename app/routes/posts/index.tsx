@@ -1,15 +1,9 @@
 // Import the Link component from remix/react
 import { Link, useLoaderData } from "@remix-run/react";
-// Import json from remix/node
-import { json } from "@remix-run/node";
+import getPosts from "~/models/posts.server";
 
 export const loader = async () => {
-    const posts = [
-        {title: "My first post", slug: "my-first-post"},
-        {title: "My second post", slug: "my-second-post"},
-        {title: "My third post", slug: "my-third-post"}
-    ];
-    return json({posts})
+    return getPosts();
 }
 
 export default function PostsRoute() {
