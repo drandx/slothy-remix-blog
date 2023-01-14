@@ -1,7 +1,7 @@
 import { prisma } from "~/db.server";
 export type { Post } from '@prisma/client';
 
-export function getPosts() {
+export function getPostsListings() {
     return prisma.post.findMany({
         select: {
         title: true,
@@ -9,4 +9,8 @@ export function getPosts() {
         markdown: true,
         },
     });
+}
+
+export async function getPost(slug: string) {
+    return prisma.post.findUnique({ where: { slug } });
 }
