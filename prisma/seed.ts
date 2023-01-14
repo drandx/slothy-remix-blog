@@ -41,9 +41,39 @@ async function seed() {
   });
 
   const posts = [
-    {title: "My first post", slug: "my-first-post", markdown: "Hello, world!"},
-    {title: "My second post", slug: "my-second-post", markdown: "Hello"},
-    {title: "My third post", slug: "my-third-post", markdown: "Hello, world!"}
+    {
+      title: "My First Post", 
+      slug: "my-first-post", 
+      markdown: `# This is my first post
+        ### This is markdown text
+        ---
+        Hopefully it works!
+        -- First post
+      
+      `
+    },
+    {
+      title: "My Second Post", 
+      slug: "my-second-post", 
+      markdown: `# This is my scond post
+        ### This is markdown text
+        ---
+        Hopefully it works!
+        -- Second post
+      
+      `
+    },
+    {
+      title: "My Third Post", 
+      slug: "my-third-post", 
+      markdown: `# This is my third post
+        ### This is markdown text
+        ---
+        Hopefully it works!
+        -- Third post
+      
+      `
+    }
   ];
 
   // Pusg to primsa every post

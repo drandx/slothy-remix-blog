@@ -1,20 +1,24 @@
 import { useLoaderData } from "@remix-run/react";
-import { LoaderArgs } from "@remix-run/server-runtime";
+import { LoaderFunction } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node";
 import { getPost } from "~/models/posts.server";
 
-export async function loader({params}: LoaderArgs) {
+type LoaderData = {
+    post: Awaited<ReturnType<typeof getPost>>;
+}
+
+export const loader: LoaderFunction = async ({ params }) => {
     const slug = params.slug;
     const post = await getPost(slug);
-    return json(post);
+    return json<LoaderData>({ post });
 }
 
 export default function PostRoute () {
-    const data = useLoaderData();
+    const { post } = useLoaderData() as LoaderData;
     return (
-        <main>
-            <h1>{data.title}</h1>
-            <p>{data.body}</p>
+        <main className= "mx-auto max-w-4x1">
+            <h1 className="my-6 border-b-2 text-center text-3x1">{post?.title}</h1>
+            <p>{post?.markdown}</p>
         </main>
     );
 }
