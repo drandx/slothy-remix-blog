@@ -1,10 +1,12 @@
-import {json} from "@remix-run/node";
+import { prisma } from "~/db.server";
+export type { Post } from '@prisma/client';
 
-export default async function getPosts() {
-    const posts = [
-        {title: "My first post", slug: "my-first-post"},
-        {title: "My second post", slug: "my-second-post"},
-        {title: "My third post", slug: "my-third-post"}
-    ];
-    return json({posts})
+export function getPosts() {
+    return prisma.post.findMany({
+        select: {
+        title: true,
+        slug: true,
+        markdown: true,
+        },
+    });
 }
