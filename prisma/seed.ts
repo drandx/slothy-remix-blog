@@ -44,35 +44,35 @@ async function seed() {
     {
       title: "My First Post", 
       slug: "my-first-post", 
-      markdown: `# This is my first post
-        ### This is markdown text
-        ---
-        Hopefully it works!
-        -- First post
-      
-      `
+      markdown: `
+# My First Post
+
+This is my first post writing a Remix application.  I'm using Prisma to manage my database. 
+I'm also using [Prisma Migrate](https://www.prisma.io/docs/concepts/components/prisma-migrate) 
+to manage my database schema.
+      `.trim()
     },
     {
       title: "My Second Post", 
       slug: "my-second-post", 
-      markdown: `# This is my scond post
-        ### This is markdown text
-        ---
-        Hopefully it works!
-        -- Second post
-      
-      `
+      markdown: `
+# My Second Post
+
+This is my second post writing a Remix application. I'm using Prisma to manage my database. 
+I'm also using [Prisma Migrate](https://www.prisma.io/docs/concepts/components/prisma-migrate) 
+to manage my database schema.
+        `.trim()
     },
     {
       title: "My Third Post", 
       slug: "my-third-post", 
-      markdown: `# This is my third post
-        ### This is markdown text
-        ---
-        Hopefully it works!
-        -- Third post
-      
-      `
+      markdown: `
+# My Third Post
+
+This is my third post writing a Remix application.  I'm using Prisma to manage my database. 
+I'm also using [Prisma Migrate](https://www.prisma.io/docs/concepts/components/prisma-migrate) 
+to manage my database schema.
+        `.trim()
     }
   ];
 
