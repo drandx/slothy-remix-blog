@@ -4,13 +4,15 @@ import { json } from "@remix-run/node";
 import { getPost } from "~/models/posts.server";
 import { marked } from 'marked';
 import invariant from "tiny-invariant";
+import { requireAdminUser } from "~/session.server";
 
 type LoaderData = {
     title: string;
     html: string;
 }
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader: LoaderFunction = async ({ request, params }) => {
+    await requireAdminUser(request);
     const slug = params.slug;
     invariant(slug, "slug is required");
     const post = await getPost(slug);

@@ -3,6 +3,7 @@ import { ActionFunction, redirect } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node";
 import { createPost } from "~/models/posts.server";
 import invariant from "tiny-invariant";
+import { requireAdminUser } from "~/session.server";
 
 const inputClassName = `w-full rounded border border-gray-500 px-2 py-1 text-lg`;
 
@@ -15,6 +16,7 @@ type ActionData =
     | undefined;
 
 export const action: ActionFunction = async ({ request }) => {
+    await requireAdminUser(request);
     const body = await request.formData();
     
     const title = body.get("title");
