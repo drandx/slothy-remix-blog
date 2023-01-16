@@ -1,24 +1,54 @@
-import { Form } from "@remix-run/react";
+import { Form, useActionData } from "@remix-run/react";
 import { ActionFunction, redirect } from "@remix-run/server-runtime";
+import { json } from "@remix-run/node";
 import { createPost } from "~/models/posts.server";
+import invariant from "tiny-invariant";
 
 const inputClassName = `w-full rounded border border-gray-500 px-2 py-1 text-lg`;
 
+type ActionData = {
+    title: string;
+    slug: string;
+    markdown: string;
+}
+
 export const action: ActionFunction = async ({ request }) => {
     const body = await request.formData();
+    
     const title = body.get("title");
     const slug = body.get("slug");
     const markdown = body.get("markdown");
+
+    const errors = {
+        title: title ? null : "Title is required",
+        slug: slug ? null : "Slug is required",
+        markdown: markdown ? null : "Markdown is required",
+    }
+    
+    const hasErrors = Object.values(errors).some((errorMessage) => errorMessage);
+    if (hasErrors) {
+        return json(errors)
+    }
+
+    invariant(typeof title === 'string', "title is required");
+    invariant(typeof slug === 'string', "slug is required");
+    invariant(typeof markdown === 'string', "markdown is required");
+    
     await createPost({ title, slug, markdown });
+    
     return redirect("/posts/admin");
 };
 
 export default function NewPostRoute() {
+    const errors = useActionData() as ActionData;
     return (
         <Form method="post">
           <p>
             <label>
-              Post Title:
+              Post Title: {" "}
+              {errors?.title ? (
+                <em className="text-red-600">{errors.title}</em>
+                ): null}
               <input
                 type="text"
                 name="title"
@@ -28,7 +58,10 @@ export default function NewPostRoute() {
           </p>
           <p>
             <label>
-              Post Slug:
+              Post Slug: {" "}
+              {errors?.slug ? (
+                <em className="text-red-600">{errors.slug}</em>
+                ): null}
               <input
                 type="text"
                 name="slug"
@@ -38,7 +71,10 @@ export default function NewPostRoute() {
           </p>
           <p>
             <label htmlFor="markdown">
-              Markdown:
+              Post Markdown: {" "}
+              {errors?.markdown ? (
+                <em className="text-red-600">{errors.markdown}</em>
+                ): null}
             </label>
             <textarea
               id="markdown"
