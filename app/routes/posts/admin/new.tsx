@@ -1,4 +1,4 @@
-import { Form, useActionData } from "@remix-run/react";
+import { Form, useActionData, useTransition } from "@remix-run/react";
 import { ActionFunction, redirect } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node";
 import { createPost } from "~/models/posts.server";
@@ -6,11 +6,13 @@ import invariant from "tiny-invariant";
 
 const inputClassName = `w-full rounded border border-gray-500 px-2 py-1 text-lg`;
 
-type ActionData = {
-    title: string;
-    slug: string;
-    markdown: string;
-}
+type ActionData = 
+    | {
+      title: string;
+      slug: string;
+      markdown: string;
+    }
+    | undefined;
 
 export const action: ActionFunction = async ({ request }) => {
     const body = await request.formData();
@@ -33,7 +35,7 @@ export const action: ActionFunction = async ({ request }) => {
     invariant(typeof title === 'string', "title is required");
     invariant(typeof slug === 'string', "slug is required");
     invariant(typeof markdown === 'string', "markdown is required");
-    
+
     await createPost({ title, slug, markdown });
     
     return redirect("/posts/admin");
@@ -41,6 +43,8 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function NewPostRoute() {
     const errors = useActionData() as ActionData;
+    const transition = useTransition();
+    const isCreating = Boolean(transition.submission);
     return (
         <Form method="post">
           <p>
@@ -86,9 +90,10 @@ export default function NewPostRoute() {
           <div className="flex justify-end gap-4">
             <button
               type="submit"
+              disabled={isCreating}
               className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400 disabled:bg-blue-300"
             >
-                Create Post
+                {isCreating ? "Creating..." : "Create Post"}
             </button>
           </div>
         </Form>
