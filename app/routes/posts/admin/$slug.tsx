@@ -1,5 +1,5 @@
 import { Form, useActionData, useTransition } from "@remix-run/react";
-import { ActionFunction, redirect } from "@remix-run/server-runtime";
+import { ActionFunction, LoaderFunction, redirect } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node";
 import { createPost } from "~/models/posts.server";
 import invariant from "tiny-invariant";
@@ -15,7 +15,16 @@ type ActionData =
     }
     | undefined;
 
-export const action: ActionFunction = async ({ request }) => {
+export const loader: LoaderFunction = async ({ request, params }) => {
+      // Return empty json if slug is new
+      if (params.slug === "new") {
+        return json({});
+      } else {
+        return json(null);
+      }
+};
+
+export const action: ActionFunction = async ({ request, params }) => {
     await requireAdminUser(request);
     const body = await request.formData();
     
@@ -38,7 +47,13 @@ export const action: ActionFunction = async ({ request }) => {
     invariant(typeof slug === 'string', "slug is required");
     invariant(typeof markdown === 'string', "markdown is required");
 
-    await createPost({ title, slug, markdown });
+    // Create the post if it's new
+    if (params.slug === "new") {
+      await createPost({ title, slug, markdown });
+    } else {
+      //TODO: updaste the post
+    }
+
     
     return redirect("/posts/admin");
 };
