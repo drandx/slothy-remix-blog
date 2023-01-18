@@ -1,7 +1,7 @@
-import { Form, useActionData, useTransition } from "@remix-run/react";
+import { Form, useActionData, useLoaderData, useTransition } from "@remix-run/react";
 import { ActionFunction, LoaderFunction, redirect } from "@remix-run/server-runtime";
 import { json } from "@remix-run/node";
-import { createPost } from "~/models/posts.server";
+import { createPost, getPost, updatePost } from "~/models/posts.server";
 import invariant from "tiny-invariant";
 import { requireAdminUser } from "~/session.server";
 
@@ -15,13 +15,14 @@ type ActionData =
     }
     | undefined;
 
-export const loader: LoaderFunction = async ({ request, params }) => {
+export const loader: LoaderFunction = async ({ params }) => {
       // Return empty json if slug is new
       if (params.slug === "new") {
         return json({});
-      } else {
-        return json(null);
       }
+      invariant(params.slug, "slug is required");
+      const post = await getPost(params.slug);
+      return json({ post });
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -51,7 +52,8 @@ export const action: ActionFunction = async ({ request, params }) => {
     if (params.slug === "new") {
       await createPost({ title, slug, markdown });
     } else {
-      //TODO: updaste the post
+      invariant(params.slug, "slug is required");
+      await updatePost(params.slug, { title, slug, markdown });
     }
 
     
@@ -59,11 +61,14 @@ export const action: ActionFunction = async ({ request, params }) => {
 };
 
 export default function NewPostRoute() {
+    const { post } = useLoaderData();
     const errors = useActionData() as ActionData;
     const transition = useTransition();
     const isCreating = Boolean(transition.submission);
+    const isUpdating = Boolean(transition.submission);
+    const isNewPost = !post;
     return (
-        <Form method="post">
+        <Form method="post" key={post?.slug ?? "new"}>
           <p>
             <label>
               Post Title: {" "}
@@ -74,6 +79,7 @@ export default function NewPostRoute() {
                 type="text"
                 name="title"
                 className={inputClassName}
+                defaultValue={post?.title}
               />
             </label>
           </p>
@@ -87,6 +93,7 @@ export default function NewPostRoute() {
                 type="text"
                 name="slug"
                 className={inputClassName}
+                defaultValue={post?.slug}
               />
             </label>
           </p>
@@ -102,15 +109,18 @@ export default function NewPostRoute() {
               rows={20}
               name="markdown"
               className={`${inputClassName} font-mono`}
+              defaultValue={post?.markdown}
             />
           </p>
           <div className="flex justify-end gap-4">
             <button
               type="submit"
-              disabled={isCreating}
+              name="intent"
+              value={isNewPost ? "create" : "update"}
+              disabled={isCreating || isUpdating}
               className="rounded bg-blue-500 py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400 disabled:bg-blue-300"
             >
-                {isCreating ? "Creating..." : "Create Post"}
+                {isNewPost ? (isCreating ? "Creating..." : "Create Post") : (isUpdating ? "Updating..." : "Update Post")}
             </button>
           </div>
         </Form>
