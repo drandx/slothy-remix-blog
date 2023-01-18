@@ -12,7 +12,6 @@ type LoaderData = {
 }
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-    await requireAdminUser(request);
     const slug = params.slug;
     invariant(slug, "slug is required");
     const post = await getPost(slug);

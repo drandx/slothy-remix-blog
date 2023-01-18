@@ -22,9 +22,9 @@ export default function PostsRoute() {
         <main>
             <h1>Posts</h1>
             {adminUser && (
-                <Link to="admin" className="text-red-600 underline">
-                    Admin
-                </Link>)
+            <Link to="admin" className="text-red-600 underline">
+                Admin
+            </Link>)
             }   
             <ul>
                 {posts.map((post ) => (
